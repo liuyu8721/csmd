@@ -1,0 +1,29 @@
+export CSMD_HOME=/public/users/liuyu/csmd_test/code/csmd-master
+export PATH=$PATH:${CSMD_HOME}
+
+CS_P1:
+csmd --cs hg19Removal --ref /public/biodata/public_reference/Sequence/CSMD/hg19/hg19_ucsc.fasta --thread 5 --r1 /public/users/liuyu/csmd_test/project/data/SimData03.R1.fastq --r2 /public/users/liuyu/csmd_test/project/data/SimData03.R2.fastq --output /public/users/liuyu/csmd_test/project/cs/hg19Removal/SimData03.hg19removal.fastq
+
+CS_P2:
+csmd --cs ahgRemoval --ref /public/biodata/public_reference/Sequence/CSMD/AHG/ahg.fasta --thread 10 --input /public/users/liuyu/csmd_test/project/cs/hg19Removal/SimData20.hg19removal.fastq --output /public/users/liuyu/csmd_test/project/cs/ahgRemoval/SimData20.hg19removal.AHGremoval.fastq
+
+CS_P3:
+csmd --cs lcrRemoval --ref /public/biodata/public_reference/Sequence/CSMD/RepBase/RepBase.ref --thread 6 --input /public/users/liuyu/csmd_test/project/cs/ahgRemoval/SimData01.hg19removal.AHGremoval.fastq --output /public/users/liuyu/csmd_test/project/cs/lcrRemoval/SimData01.hg19removal.AHGremoval.LCRremoval.fasta
+
+CS_P4:
+csmd --cs ehgRemoval --ref /public/biodata/public_reference/Sequence/CSMD/EHG/ehg.fasta --thread 10 --input /public/users/liuyu/csmd_test/project/cs/lcrRemoval/SimData00.hg19removal.AHGremoval.LCRremoval.fasta --output /public/users/liuyu/csmd_test/project/cs/ehgRemoval/SimData00.hg19Removal.AHGRemoval.LCRRemoval.EHGRemoval.fasta
+
+MD_P2:
+csmd --md discovery --ref /public/users/liuyu/DB/GenomeCollection/RefSeq/bacteria/RepSpecies_20181108/RefSeq_RepSpecies --thread 10 --input /public/users/liuyu/csmd_test/project/cs/ehgRemoval/pooled_nonHuman.fasta --outdir /public/users/liuyu/csmd_test/project/md/P2
+
+MD_P3:
+csmd --md correction --sam /public/users/liuyu/csmd_test/project/md/P2/updated_Pooled_Bac.sam --report /public/users/liuyu/csmd_test/project/md/P2/csmd-sam-report.tsv --cutoff 25 --thread 10 --nt /public/biodata/public_reference/blast_index/nt_20180122/blast_index/nt --refseq /public/users/liuyu/DB/GenomeCollection/RefSeq/bacteria/RepGenomes_20181108/RepGenomes.fasta --outdir /public/users/liuyu/csmd_test/project/md/P3 --taxonomy /public/users/liuyu/csmd_test/code/taxdb
+
+MD_P4:
+csmd --md refinement --seqdir /public/biodata/public_reference/Sequence/CSMD/RefSeq/bacteria/ --seqlist /public/users/liuyu/csmd_test/project/md/P3B/DB.list --input /public/users/liuyu/csmd_test/project/cs/ehgRemoval/pooled_nonHuman.fasta --outdir /public/users/liuyu/csmd_test/project/md/P4
+
+PF_P1:
+csmd --pf dbsetup --seqdir /public/biodata/public_reference/Sequence/CSMD/RefSeq/bacteria --seqlist /public/users/liuyu/csmd_test/project/md/P4/DB.update --outdir /public/users/liuyu/csmd_test/project/PF
+
+PF_P2:
+csmd --pf profile --ref /public/users/liuyu/csmd_test/project/PF/DB/csmdSpecies --thread 1 --input /public/users/liuyu/csmd_test/project/cs/ehgRemoval/SimData00.hg19Removal.AHGRemoval.LCRRemoval.EHGRemoval.fasta --sam /public/users/liuyu/csmd_test/project/PF/SimData00.csmd.sam –-report /public/users/liuyu/csmd_test/project/PF/SimData00.csmd.profile.report
