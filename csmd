@@ -4,8 +4,9 @@
 # export CSMD_HOME=/public/users/liuyu/csmd
 # export PATH=$PATH:${CSMD_HOME}
 #!/bin/sh
-CSMD_VERSION=0.02
+CSMD_VERSION=0.05
 source ${CSMD_HOME}/configs.sh
+source ${CSMD_HOME}/downloads.sh
 
 #args to be injected
 input_path=''
@@ -61,7 +62,7 @@ function download_help () {
   echo "Options:"
   echo ""
   echo "    --download-library LIBNAME"
-  echo "        Permissible LIBNAME includes “hg19”, “AHG”, “EHG”, “nt”, or “RefSeqBac”."
+  echo "        Permissible LIBNAME includes “hg38”, “AHG”, “EHG”, “nt”, or “RefSeqBac”."
   echo "    --db DBPATH"
   echo "        The save path for the download."
   exit
@@ -83,13 +84,13 @@ function download_taxonomy_help () {
 
 function build_library_help () {
   echo ""
-  echo "About: This command generates csmd needed indexed databases, BWA index for hg19 and AHG databases, Bowtie2 index for EHG and RefSeq representative species databases, and blast index for nt and representative genomes databases. To obtain RepBase, go to http://www.girinst.org."
+  echo "About: This command generates csmd needed indexed databases, BWA index for hg38 and AHG databases, Bowtie2 index for EHG and RefSeq representative species databases, and blast index for nt and representative genomes databases. To obtain RepBase, go to http://www.girinst.org."
   echo "Usage: csmd --build-library LIBNAME --db DBPATH"
   echo ""
   echo "Options:"
   echo ""
   echo "    --build-library LIBNAME"
-  echo "        Permissible LIBNAME includes “hg19”, “AHG”, “EHG”, “nt”, or “RefSeqBac”."
+  echo "        Permissible LIBNAME includes “hg38”, “AHG”, “EHG”, “nt”, or “RefSeqBac”."
   echo "    --db DBPATH"
   echo "        The save path for the indexed database."
   exit
@@ -113,21 +114,21 @@ function cs_help () {
   echo ""
   echo "About: A four-phase human-derived sequence subtraction"
   echo "Usage:"
-  echo "    csmd --cs hg19Removal --ref REFNAME --thread NUMBER --r1 SAMPLE.R1.fastq --r2 SAMPLE.R2.fastq --output SAMPLE.hg19removal.fastq"
-  echo "    csmd --cs ahgRemoval --ref REFNAME --thread NUMBER --input SAMPLE.hg19removal.fastq --output SAMPLE.hg19removal.AHGremoval.fastq"
-  echo "    csmd --cs lcrRemoval --ref REFNAME --thread NUMBER --input SAMPLE.hg19removal.AHGremoval.fastq --output SAMPLE.hg19removal.AHGremoval.LCRremoval.fasta"
-  echo "    csmd --cs ehgRemoval --ref REFNAME --thread NUMBER --input SAMPLE.hg19removal.AHGremoval.LCRremoval.fasta --output SAMPLE.hg19Removal.AHGRemoval.LCRRemoval.EHGRemoval.fasta"
+  echo "    csmd --cs hg38Removal --ref REFNAME --thread NUMBER --r1 SAMPLE.R1.fastq --r2 SAMPLE.R2.fastq --output SAMPLE.hg38removal.fastq"
+  echo "    csmd --cs ahgRemoval --ref REFNAME --thread NUMBER --input SAMPLE.hg38removal.fastq --output SAMPLE.hg38removal.AHGremoval.fastq"
+  echo "    csmd --cs lcrRemoval --ref REFNAME --thread NUMBER --input SAMPLE.hg38removal.AHGremoval.fastq --output SAMPLE.hg38removal.AHGremoval.LCRremoval.fasta"
+  echo "    csmd --cs ehgRemoval --ref REFNAME --thread NUMBER --input SAMPLE.hg38removal.AHGremoval.LCRremoval.fasta --output SAMPLE.hg38Removal.AHGRemoval.LCRRemoval.EHGRemoval.fasta"
   echo ""
   echo "Options:"
   echo ""
   echo "    --cs STEPNAME"
-  echo "        The cs step detail name. Permissible STEPNAME includes “hg19Removal”, “ahgRemoval”, “lcrRemoval”, or “ehgRemoval”."
+  echo "        The cs step detail name. Permissible STEPNAME includes “hg38Removal”, “ahgRemoval”, “lcrRemoval”, or “ehgRemoval”."
   echo "    --ref REFNAME"
   echo "        The reference name with the path used for human-derived reads alignment and removal. "
   echo "    --thread NUMBER"
   echo "        The number of threads (CPUs) to use."
   echo "    --r1, --r2, --input"
-  echo "        The input file with the path. For hg19Removal, the input should be paired-end reads using the parameters “--r1” and “--r2”, but for others, using the parameter “--input“. In the phase of hg19Removal, paired-end reads will be combined into single-end data after finishing hg19 reads alignment and removal. The format of the input files is illustrated as the examples."
+  echo "        The input file with the path. For hg38Removal, the input should be paired-end reads using the parameters “--r1” and “--r2”, but for others, using the parameter “--input“. In the phase of hg38Removal, paired-end reads will be combined into single-end data after finishing hg38 reads alignment and removal. The format of the input files is illustrated as the examples."
   echo "    --output"
   echo "        The output file with the path. The format of the output files is illustrated as the examples."
   exit
@@ -137,14 +138,14 @@ function md_help () {
   echo ""
   echo "About: A three-phase microbiome discovery procedure"
   echo "Usage:"
-  echo "    csmd --md discovery –-ref REFNAME --input pooled_nonHuman.fasta --outdir OUTPATH"
-  echo "    csmd --md correction --sam csmd_discovery.sam --report csmd_discovery_report.tsv -–cutoff 25 --thread NUMBER --nt NTNAME --refseq RSNAME --output DBLIST"
+  echo "    csmd --md finding –-ref REFNAME --input pooled_nonHuman.fasta --outdir OUTPATH"
+  echo "    csmd --md correction --sam csmd_finding.sam --report csmd_finding_report.tsv -–cutoff 25 --thread NUMBER --nt NTNAME --refseq RSNAME --output DBLIST"
   echo "    csmd --md refinement --seqdir SEQPATH --seqlist DBLIST --input pooled_nonHuman.fasta --outdir OUTPATH"
   echo ""
   echo "Options:"
   echo ""
   echo "    --md STEPNAME"
-  echo "        The md step detail name. Permissible STEPNAME includes “discovery”, “correction”, or “refinement”."
+  echo "        The md step detail name. Permissible STEPNAME includes “finding”, “correction”, or “refinement”."
   echo "    --ref REFNAME"
   echo "        The reference name with the path used for the initial alignment to the redundant microbial database containing all the organisms or the nearest neighbors likely to be present in the sample. "
   echo "    --thread NUMBER"
@@ -287,76 +288,27 @@ function parse_args () {
   done
 }
 
-# csmd --download-library hg19 --db /data/dna
-# download fa.gz into ${db_path}/hg19/SEQ and gunzip into
+# csmd --download-library hg38 --db /data/dna
+# download fa.gz into ${db_path}/hg38/SEQ and gunzip into
 # that directory and cat all into ${db_path}
-download_hg19 () {
+download_hg38 () {
   parse_args $@
-  if [ -d "${db_path}" ]
-  then
-    hg_19_dir=${db_path}/hg19
-    hg_19_download_dir=${hg_19_dir}/SEQ
-
-    if [ -d "${hg_19_download_dir}" ]; then
-     echo -e "\033[44;37;5m ERROR:\033[0m path ${hg_19_download_dir} has already existed!"
-     exit
-    fi
-
-    mkdir -p ${hg_19_download_dir}
-    cd ${hg_19_download_dir}
-    # rm -rf ${hg_19_download_dir}/*.fa
-    #wget -c ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/chr11_gl000202_random.fa.gz -P ${hg_19_download_dir}
-    wget -c ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/* -P ${hg_19_download_dir}
-    for item in `ls ${hg_19_download_dir}/*.fa.gz`;
-    do
-      gunzip ${item}
-    done
-    echo "concatenating all fa files into hg19_ucsc.fasta"
-    cat *.fa > ${hg_19_dir}/hg19_ucsc.fasta
-  else
-    echo "please provide db path and make sure its path exist"
-  fi
+  do_download_hg38 ${db_path}
 }
 
-# csmd --build-library hg19 --db /data/dna
-build_hg19 () {
+# csmd --build-library hg38 --db /data/dna
+build_hg38 () {
   parse_args $@
-  hg_19_dir=${db_path}/hg19
-  cd ${hg_19_dir}
-  echo "building hg19_ucsc.fasta index"
-  bwa index hg19_ucsc.fasta
+  hg_38_dir=${db_path}/hg38
+  cd ${hg_38_dir}
+  echo "building hg38_ucsc.fasta index"
+  bwa index hg38_ucsc.fasta
 }
 
 # csmd --download-library AHG --db /data/dna
 download_AHG () {
   parse_args $@
-  if [ -d "${db_path}" ]
-  then
-    ahg_dir=${db_path}/AHG
-    ahg_download_dir=${ahg_dir}/SEQ
-
-    if [ -d "${ahg_download_dir}" ]; then
-     echo -e "\033[44;37;5m ERROR:\033[0m path ${ahg_download_dir} has already existed!"
-     exit
-    fi
-
-    mkdir -p ${ahg_download_dir}
-    cd ${ahg_download_dir}
-    # rm -rf ${ahg_download_dir}/*.fa
-    #    wget -c ftp://ftp.ncbi.nlm.nih.gov/genomes/H_sapiens/ARCHIVE/BUILD.37.3/Assembled_chromosomes/seq/*.fa.gz \
-    #    -P ${ahg_download_dir}
-    wget -c ftp://ftp.ncbi.nlm.nih.gov/genomes/H_sapiens/ARCHIVE/BUILD.37.3/Assembled_chromosomes/seq/*.fa.gz \
-      -P ${ahg_download_dir}
-
-    for item in `ls ${ahg_download_dir}/*.fa.gz`;
-    do
-      gunzip ${item}
-    done
-    echo "concatenating all fa files into ahg.fasta"
-    cat *.fa > ${ahg_dir}/ahg.fasta
-  else
-    echo "please provide db path and make sure its path exist"
-  fi
+  do_download_AHG ${db_path}
 }
 
 # csmd --build-library AHG --db /data/dna
@@ -371,39 +323,7 @@ build_AHG () {
 # csmd --download-library EHG --db /data/dna
 download_EHG () {
   parse_args $@
-  if [ -d "${db_path}" ]
-  then
-    ehg_dir=${db_path}/EHG
-    ehg_download_dir=${ehg_dir}/SEQ
-
-    if [ -d "${ehg_download_dir}" ]; then
-     echo -e "\033[44;37;5m ERROR:\033[0m path ${ehg_download_dir} has already existed!"
-     exit
-    fi
-
-    mkdir -p ${ehg_download_dir}
-    cd ${ehg_download_dir}
-    # rm -rf ${ehg_download_dir}/*.fa
-    wget -c ftp://ftp.ensembl.org/pub/current_fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz \
-      -P ${ehg_download_dir}
-
-    wget -c ftp://ftp.ncbi.nih.gov/genomes/H_sapiens/RNA/rna.fa.gz \
-      -P ${ehg_download_dir}
-
-    # Edited by Liu
-    wget -c ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh37_latest/refseq_identifiers/GRCh37_latest_genomic.fna.gz \
-      -P ${ehg_download_dir}
-
-    for item in `ls ${ehg_download_dir}/*.gz`;
-    do
-      gunzip ${item}
-    done
-    echo "concatenating all fa files into ehg.fasta"
-    # Edited by Liu
-    cat *.fa *.fna > ${ehg_dir}/ehg.fasta
-  else
-    echo "please provide db path and make sure its path exist"
-  fi
+  do_download_EHG ${db_path}
 }
 
 # csmd --build-library EHG --db /data/dna/EHG
@@ -419,46 +339,13 @@ build_EHG () {
 # csmd --download-library nt --db /data/dna
 download_nt () {
   parse_args $@
-  if [ -d "${db_path}" ]
-  then
-    nt_download_dir=${db_path}/nt
-
-    if [ -d "${nt_download_dir}" ]; then
-     echo -e "\033[44;37;5m ERROR:\033[0m path ${nt_download_dir} has already existed!"
-     exit
-    fi
-
-    mkdir -p ${nt_download_dir}
-    cd ${nt_download_dir}
-    wget -c ftp://ftp.ncbi.nlm.nih.gov/blast/db/nt*.tar.gz \
-      -P ${nt_download_dir}
-
-    for item in `ls ${nt_download_dir}/nt*.tar.gz`;
-    do
-      tar -xvf ${item} -C ${nt_download_dir}
-    done
-  else
-    echo "please provide db path and make sure its path exist"
-  fi
+  do_download_nt ${db_path}
 }
 
 # csmd --download-library RefSeqBac --db /data/dna
 download_RefSeqBac () {
   parse_args $@
-  if [ -d "${db_path}" ]
-  then
-    bacteria_dir=${db_path}/RefSeq/bacteria
-
-    if [ -d "${bacteria_dir}" ]; then
-     echo -e "\033[44;37;5m ERROR:\033[0m path ${bacteria_dir} has already existed!"
-     exit
-    fi
-
-    mkdir -p ${bacteria_dir}
-    sh ${CSMD_HOME}/MD_P0.sh ${bacteria_dir}
-  else
-    echo "please provide db path and make sure its path exist"
-  fi
+  do_download_RefSeqBac ${db_path}
 }
 
 # csmd --build-library RefSeqBac --db /data/dna
@@ -474,6 +361,16 @@ build_RefSeqBac () {
   fi
 }
 
+# csmd --build-library nt --db /data/nt
+build_nt () {
+  parse_args $@
+  nt_dir=${db_path}/nt
+  nt_download_dir=${db_path}/nt/SEQ
+  cd ${nt_download_dir}
+  echo "building nt index"
+  makeblastdb -in nt -dbtype nucl -out ${nt_dir}/nt
+}
+
 download_taxonomy () {
   case $1 in
     -h | --help )
@@ -482,33 +379,16 @@ download_taxonomy () {
       ;;
 
     * )
-      do_download_taxonomy $@
+      execute_download_taxonomy $@
       ;;
 
   esac
 }
 
 # csmd --download-taxonomy --db /data/dna
-do_download_taxonomy () {
+execute_download_taxonomy () {
   parse_args $@
-  if [ -d "${db_path}" ]
-  then
-    # Edited by Liu
-    taxonomy_dir=${db_path}/taxonomy/taxdump
-
-    if [ -d "${taxonomy_dir}" ]; then
-     echo -e "\033[44;37;5m ERROR:\033[0m path ${taxonomy_dir} has already existed!"
-     exit
-    fi
-
-    mkdir -p ${taxonomy_dir}
-    cd ${taxonomy_dir}
-    wget -c ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz \
-      -P ${taxonomy_dir}
-    tar -xvf taxdump.tar.gz -C ${taxonomy_dir}
-  else
-    echo "please provide db path and make sure its path exist"
-  fi
+  do_download_taxonomy ${db_path}
 }
 
 build_taxonomy () {
@@ -538,9 +418,9 @@ do_build_taxonomy () {
 
 download () {
   case $1 in
-    hg19 )
+    hg38 )
       shift
-      download_hg19 $@
+      download_hg38 $@
       ;;
 
     AHG )
@@ -577,9 +457,9 @@ download () {
 
 build () {
   case $1 in
-    hg19 )
+    hg38 )
       shift
-      build_hg19 $@
+      build_hg38 $@
       ;;
 
     AHG )
@@ -597,6 +477,11 @@ build () {
       build_RefSeqBac $@
       ;;
 
+    nt )
+      shift
+      build_nt $@
+      ;;
+
     -h | --help )
       build_library_help
       exit
@@ -611,16 +496,16 @@ build () {
 }
 
 
-# csmd --cs hg19Removal --ref REFNAME --thread NUMBER \
-# --r1 SAMPLE.R1.fastq --r2 SAMPLE.R2.fastq --output SAMPLE.hg19removal.fastq
-execute_cs_hg19Removal () {
+# csmd --cs hg38Removal --ref REFNAME --thread NUMBER \
+# --r1 SAMPLE.R1.fastq --r2 SAMPLE.R2.fastq --output SAMPLE.hg38removal.fastq
+execute_cs_hg38Removal () {
   parse_args $@
   echo "to call CS_P1.sh"
   sh ${CSMD_HOME}/CS_P1.sh ${ref_name} ${thread_number} ${r1} ${r2} ${output_path}
 }
 
 # csmd --cs ahgRemoval --ref REFNAME --thread NUMBER \
-# --input SAMPLE.hg19removal.fastq --output SAMPLE.hg19removal.AHGremoval.fastq
+# --input SAMPLE.hg38removal.fastq --output SAMPLE.hg38removal.AHGremoval.fastq
 execute_cs_ahgRemoval () {
   parse_args $@
   echo "to call CS_P2.sh"
@@ -628,8 +513,8 @@ execute_cs_ahgRemoval () {
 }
 
 # csmd --cs lcrRemoval --ref REFNAME --thread NUMBER
-# --input SAMPLE.hg19removal.AHGremoval.fastq \
-# --output SAMPLE.hg19removal.AHGremoval.LCRremoval.fasta
+# --input SAMPLE.hg38removal.AHGremoval.fastq \
+# --output SAMPLE.hg38removal.AHGremoval.LCRremoval.fasta
 execute_cs_lcrRemoval () {
   parse_args $@
   echo "to call CS_P3.sh"
@@ -637,8 +522,8 @@ execute_cs_lcrRemoval () {
 }
 
 # csmd --cs ehgRemoval --ref REFNAME --thread NUMBER \
-# --input SAMPLE.hg19removal.AHGremoval.LCRremoval.fasta \
-# --output SAMPLE.hg19Removal.AHGRemoval.LCRRemoval.EHGRemoval.fasta
+# --input SAMPLE.hg38removal.AHGremoval.LCRremoval.fasta \
+# --output SAMPLE.hg38Removal.AHGRemoval.LCRRemoval.EHGRemoval.fasta
 execute_cs_ehgRemoval () {
   parse_args $@
   echo "to call CS_P4.sh"
@@ -647,9 +532,9 @@ execute_cs_ehgRemoval () {
 
 execute_cs_step () {
   case $1 in
-    hg19Removal )
+    hg38Removal )
       shift
-      execute_cs_hg19Removal $@
+      execute_cs_hg38Removal $@
       ;;
 
     ahgRemoval )
@@ -682,9 +567,9 @@ execute_cs_step () {
 
 execute_md_step () {
   case $1 in
-    discovery )
+    finding )
       shift
-      execute_md_discovery $@
+      execute_md_finding $@
       ;;
 
     correction )
@@ -710,10 +595,10 @@ execute_md_step () {
   esac
 }
 
-# csmd --md discovery –ref REFNAME --thread NUMBER \
+# csmd --md finding –ref REFNAME --thread NUMBER \
 # --input pooled_nonHuman.fasta \
 # --outdir DBLIST
-execute_md_discovery () {
+execute_md_finding () {
   parse_args $@
   echo "to call MD_P2.sh"
   sh ${CSMD_HOME}/MD_P2.sh ${ref_name} ${thread_number} ${input_path} ${outdir}
@@ -777,7 +662,7 @@ execute_pf_dbsetup () {
 }
 
 # csmd --pf profile --ref REFNAME --thread NUMBER \
-# --input SAMPLE.hg19Removal.AHGRemoval.LCRRemoval.EHGRemoval.fasta \
+# --input SAMPLE.hg38Removal.AHGRemoval.LCRRemoval.EHGRemoval.fasta \
 # --sam SAMPLE.csmd.sam \
 # --report SAMPLE.csmd.profile.report
 execute_pf_profile () {

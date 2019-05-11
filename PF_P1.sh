@@ -51,6 +51,8 @@ do
     fasta_genome=$(ls ${PF_WORKDIR_P1_SEQDIR}/SEQ/${aa}*.gz)
     if [ "$fasta_genome" != "" ]; then
 	gzip -d ${fasta_genome} -c > ${PF_WORKDIR_P1_OUTDIR}/DB/Genome/${aa}.fna
+       	sed -i 's/^>.*$/NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN/' ${PF_WORKDIR_P1_OUTDIR}/DB/Genome/${aa}.fna
+	sed -i "1s/^.*$/${header}/" ${PF_WORKDIR_P1_OUTDIR}/DB/Genome/${aa}.fna
     else
 	echo -e "\033[44;37;5m ERROR:\033[0m the fasta genome of ${aa} not exist"
 	exit

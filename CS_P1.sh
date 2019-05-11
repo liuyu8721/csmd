@@ -17,9 +17,9 @@ CS_P1_OUTPUT=$5
 CS_P1_OUTPATH="$(dirname "${CS_P1_OUTPUT}")"
 
 echo "#--------------------------------------------------------------#"
-echo "CS Phase I: Human reference genome (hg19) removal"
+echo "CS Phase I: Human reference genome (hg38) removal"
 
-echo "CS Phase Ia: Aligning reads to hg19 with BWA"
+echo "CS Phase Ia: Aligning reads to hg38 with BWA"
 
 mkdir -p ${CS_P1_OUTPATH}
 
@@ -36,7 +36,7 @@ bwa sampe -f ${CS_P1_RUNNING}/${CS_P1_SAMPLE}.sam ${CS_WORKDIR_P1_REFNAME} \
 ${CS_P1_RUNNING}/${CS_P1_SAMPLE}.R1.sai ${CS_P1_RUNNING}/${CS_P1_SAMPLE}.R2.sai \
 ${CS_WORKDIR_P1_R1} ${CS_WORKDIR_P1_R2}
 
-echo "CS Phase Ib: hg19 mapped reads removal"
+echo "CS Phase Ib: hg38 mapped reads removal"
 
 ### Removing mapping reads
 samtools view -bS -f 4 ${CS_P1_RUNNING}/${CS_P1_SAMPLE}.sam > ${CS_P1_RUNNING}/${CS_P1_SAMPLE}.Unmapped.bam
