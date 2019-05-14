@@ -9,7 +9,7 @@ Table 1. List of pre-requisite software and the available information
 |1|BWA|0.7.15|http://bio-bwa.sourceforge.net/|
 |2|SAMtools|1.4|http://www.htslib.org/|
 |3|bedtools|2.26.0|https://bedtools.readthedocs.io/en/latest/|
-|4|seqdk|1.2|https://github.com/lh3/seqtk|
+|4|seqtk|1.2|https://github.com/lh3/seqtk|
 |5|RepeatMasker|4.0.7|http://repeatmasker.org/|
 |6|PathoScope 2.0|0.02|https://sourceforge.net/projects/pathoscope/|
 |7|R|3.3.3|https://www.r-project.org/|
