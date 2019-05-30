@@ -1,4 +1,4 @@
-It includes three key sub-steps to make the microbiome Computation Subtraction-based Microbiome Discovery (CSMD)
+Computation Subtraction-based Microbiome Discovery (CSMD)
 ====
 CSMD is a computational pipeline for high-resolution profiling of low abundance microbiome in clinical samples using whole genome shotgun sequencing.
 ## 1. Pre-requisite software
